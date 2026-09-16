@@ -159,3 +159,47 @@ async function createFolder(name, dirHandle) {
     if (!dh) return null;
     return dh.getDirectoryHandle(name, { create: true });
 }
+
+// DOM query
+function d$(sel){
+    return document.querySelector(sel);
+}
+
+// DOM query all
+function d$$(sel){
+    return [...document.querySelectorAll(sel)];
+}
+
+// Async lock
+function newLock(){
+    var unlock,lock=new Promise((res,rej)=>{ unlock=res; });
+    return [lock,unlock];
+}
+
+// New element
+function newEle(tag){
+    return document.createElement(tag);
+}
+
+// Show status
+function showStatus(msg){
+    var div;
+
+    if (d$("#top-status-div") != null)
+        div = d$("#top-status-div")
+    else {
+        div = newEle("div");
+        div.id = "top-status-div";
+        div.style.cssText = `width:33vw; position:fixed; left:33vw; top:15px;
+            text-align:center; background-color:white; border-radius:10px;
+            z-index:999999`;
+        d$("body").appendChild(div);
+    }
+    div.innerHTML = msg;
+}
+
+// Hide status
+function hideStatus(){
+    if (d$("#top-status-div") != null)
+        d$("#top-status-div").remove();
+}

@@ -430,7 +430,9 @@ function renderEditor(content, filename, paneId = 'pane1') {
         // Load file list
         if (keyHistory[0]=="[" && keyHistory[1]=="["){
             suggestionInput = "";
+            showStatus("Loading file list...");
             fileList = (await getAllFiles(state.rootHandle, '')).map(x=>x.name);
+            hideStatus();
             return;
         }
         // Find matching files
