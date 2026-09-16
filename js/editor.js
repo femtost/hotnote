@@ -1,5 +1,6 @@
 'use strict';
 
+var log = console.log;
 const APP_VERSION = '1.0.0';
 
 // =========================================================================
@@ -316,6 +317,119 @@ function renderEditor(content, filename, paneId = 'pane1') {
     updateModeToolbar(paneId);
     switchToMode(ps.editorMode, paneId, content);
     applyWordWrap(paneId);
+
+    // Util
+    var savedCaretRange = null;
+
+    function getCaretRect() { // Won't return (0,0)
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return null;
+
+        const range = selection.getRangeAt(0).cloneRange();
+        range.collapse(true);
+        const marker = document.createTextNode('\u200b');
+        range.insertNode(marker);
+        const markerRange = document.createRange();
+        markerRange.selectNode(marker);
+
+        const rect = markerRange.getBoundingClientRect();
+        marker.remove();
+
+        return {
+            left: rect.left,
+            top: rect.bottom
+        };
+    }
+    function insertHtmlAtCaret(html) {
+        document.execCommand('insertHTML',false,html);
+    }
+    // Show wikilink suggestions
+    function showSuggestions(fileNames){
+        const sugBoxId = "#wikilink-suggestion-box";
+        var pos = getCaretRect();
+        var ele = document.querySelector(sugBoxId);
+        if (ele!=null) ele.remove();
+
+        var newEle = document.createElement("span");
+        newEle.id = "wikilink-suggestion-box";
+        newEle.style.cssText = `display:block; position:fixed; left:${pos.left}px; top:${pos.top}px;
+            width:25vw; max-height:calc(10 * 1.5rem); font-size:1rem; line-height:1.5rem;
+            background-color:ivory; overflow:auto; border-radius:10px; z-index:999999;
+            border:1px solid silver;`;
+
+        for (let name of fileNames){
+            let item = document.createElement("div");
+            item.innerHTML = name;
+            item.style.cssText = `cursor:pointer;`;
+            item.addEventListener("mousedown",async (event)=>{
+                event.preventDefault();
+                hideSuggestions();
+                await navigator.clipboard.writeText(name);
+                new Notification("File name copied to clipboard");
+                // insertHtmlAtCaret(name);
+            });
+            newEle.appendChild(item);
+        }
+        var body = document.querySelector("body");
+        body.appendChild(newEle);
+    }
+    // Hide wikilink suggestions
+    function hideSuggestions(){
+        const sugBoxId = "#wikilink-suggestion-box";
+        var ele = document.querySelector(sugBoxId);
+        if (ele!=null) ele.remove();
+    }
+    function saveCaret() {
+        const selection = window.getSelection();
+
+        if (selection.rangeCount) {
+            savedCaretRange = selection.getRangeAt(0).cloneRange();
+        }
+    }
+    // Event for wikilink suggestions
+    var keyHistory = ["",""];
+    var suggestionInput = "";
+    var fileList = [];
+    var ed = document.querySelector("#source-editor-ce");
+    
+    ed.addEventListener("keyup",async(event)=>{
+        saveCaret();
+        var key = event.key;
+        keyHistory.push(key);
+        if (keyHistory.length>2) keyHistory=keyHistory.slice(-2);
+
+        // Backspace
+        if (key=="Backspace" && suggestionInput.length>0){
+            suggestionInput = suggestionInput.substring(0,suggestionInput.length-1);
+            return;
+        }
+        // Hide suggestions
+        if (key=="Escape"){
+            keyHistory = ["",""];
+            suggestionInput = "";
+            fileList = [];
+            hideSuggestions();
+            return;
+        }
+        // Load file list
+        if (keyHistory[0]=="[" && keyHistory[1]=="["){
+            suggestionInput = "";
+            fileList = (await getAllFiles(state.rootHandle, '')).map(x=>x.name);
+            return;
+        }
+        // Find matching files
+        suggestionInput += key;
+        var suggestions = [];
+
+        for (let f of fileList)
+            if (f.toLowerCase().indexOf(suggestionInput) >= 0){
+                suggestions.push(f);
+                if (suggestions.length>=10) break;
+            }
+
+        if (suggestions.length>0)
+            showSuggestions(suggestions);
+    });
 }
 
 function updateModeToolbar(paneId = 'pane1') {

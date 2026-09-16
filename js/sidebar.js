@@ -1,5 +1,5 @@
 'use strict';
-
+var log = console.log;
 let _searchAbortController = null;
 
 // =========================================================================
