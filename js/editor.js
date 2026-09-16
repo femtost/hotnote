@@ -318,9 +318,7 @@ function renderEditor(content, filename, paneId = 'pane1') {
     switchToMode(ps.editorMode, paneId, content);
     applyWordWrap(paneId);
 
-    // Util
-    var savedCaretRange = null;
-
+    // Position to show suggested note files
     function getCaretRect() { // Won't return (0,0)
         const selection = window.getSelection();
         if (!selection.rangeCount) return null;
@@ -340,11 +338,16 @@ function renderEditor(content, filename, paneId = 'pane1') {
             top: rect.bottom
         };
     }
+    // To insert note file name
     function insertHtmlAtCaret(html) {
-        document.execCommand('insertHTML',false,html);
+        // Logic from source-editor.js, func: _paste
+        window.sourceEditors?.[_ceKey]?._insert(html);
+        window.sourceEditors?.[_ceKey]?._render(); 
+        window.sourceEditors?.[_ceKey]?._syncMirror(); 
+        window.sourceEditors?.[_ceKey]?._scrollToCursor();
     }
     // Show wikilink suggestions
-    function showSuggestions(fileNames){
+    function showSuggestions(suggestionInput,fileNames){
         const sugBoxId = "#wikilink-suggestion-box";
         var pos = getCaretRect();
         var ele = document.querySelector(sugBoxId);
@@ -359,14 +362,24 @@ function renderEditor(content, filename, paneId = 'pane1') {
 
         for (let name of fileNames){
             let item = document.createElement("div");
+            name = name.replace(/\.md$/,"");
             item.innerHTML = name;
             item.style.cssText = `cursor:pointer;`;
             item.addEventListener("mousedown",async (event)=>{
                 event.preventDefault();
-                hideSuggestions();
-                await navigator.clipboard.writeText(name);
-                new Notification("File name copied to clipboard");
-                // insertHtmlAtCaret(name);
+                // await navigator.clipboard.writeText(name);
+                hideSuggestions();          
+
+                for (let i=0; i<suggestionInput.length; i++)
+                    window.sourceEditors?.[_ceKey]?._deleteBackward();
+
+                insertHtmlAtCaret(name);
+            });
+            item.addEventListener('mouseenter', () => {
+                item.style.backgroundColor = 'wheat';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.backgroundColor = 'ivory';
             });
             newEle.appendChild(item);
         }
@@ -379,21 +392,13 @@ function renderEditor(content, filename, paneId = 'pane1') {
         var ele = document.querySelector(sugBoxId);
         if (ele!=null) ele.remove();
     }
-    function saveCaret() {
-        const selection = window.getSelection();
-
-        if (selection.rangeCount) {
-            savedCaretRange = selection.getRangeAt(0).cloneRange();
-        }
-    }
     // Event for wikilink suggestions
     var keyHistory = ["",""];
     var suggestionInput = "";
     var fileList = [];
     var ed = document.querySelector("#source-editor-ce");
     
-    ed.addEventListener("keyup",async(event)=>{
-        saveCaret();
+    ed.addEventListener("keyup",async(event)=>{ 
         var key = event.key;
         keyHistory.push(key);
         if (keyHistory.length>2) keyHistory=keyHistory.slice(-2);
@@ -428,7 +433,7 @@ function renderEditor(content, filename, paneId = 'pane1') {
             }
 
         if (suggestions.length>0)
-            showSuggestions(suggestions);
+            showSuggestions(suggestionInput,suggestions);
     });
 }
 
