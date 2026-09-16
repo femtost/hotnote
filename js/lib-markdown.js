@@ -264,8 +264,13 @@
         }
 
         const tag = isOrdered ? 'ol' : 'ul';
-        const itemsHtml = items.map((item) => `<li>${item}</li>`).join('');
+        // const itemsHtml = items.map((item) => `<li>${item}</li>`).join('');
         const originalMd = originalLines.join('\n');
+
+        // Use Marked.js to parse list for multiple levels
+        var itemsHtml = marked.parse(originalMd).trim();
+        itemsHtml = itemsHtml.replace(/^<${tag}>/,"") // Remove redundant open tag
+            .replace(/<\/${tag}>$/,""); // Remove redundant close tag
 
         return {
             type: 'list',
