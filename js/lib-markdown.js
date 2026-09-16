@@ -1,5 +1,6 @@
 // TunnelMesh - Markdown Parser
 // Lightweight regex-based markdown parser with bidirectional HTML conversion
+var log = console.log;
 
 (function (root, factory) {
     if (typeof module !== 'undefined' && module.exports) {
@@ -270,8 +271,8 @@
         // Use Marked.js to parse list for multiple levels
         var processedMd = originalLines.map(x=>processInline(x)).join("\n");
         var itemsHtml = marked.parse(processedMd).trim();
-        itemsHtml = itemsHtml.replace(/^<${tag.toLowerCase()}>/,"") // Remove redundant open tag
-            .replace(/<\/${tag.toLowerCase()}>$/,""); // Remove redundant close tag        
+        itemsHtml = itemsHtml.replace(new RegExp(`^<${tag.toLowerCase()}>`),"") // Remove redundant open tag
+            .replace(new RegExp(`</${tag.toLowerCase()}>$`),""); // Remove redundant close tag
 
         return {
             type: 'list',
