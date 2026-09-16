@@ -268,9 +268,10 @@
         const originalMd = originalLines.join('\n');
 
         // Use Marked.js to parse list for multiple levels
-        var itemsHtml = marked.parse(originalMd).trim();
-        itemsHtml = itemsHtml.replace(/^<${tag}>/,"") // Remove redundant open tag
-            .replace(/<\/${tag}>$/,""); // Remove redundant close tag
+        var processedMd = originalLines.map(x=>processInline(x)).join("\n");
+        var itemsHtml = marked.parse(processedMd).trim();
+        itemsHtml = itemsHtml.replace(/^<${tag.toLowerCase()}>/,"") // Remove redundant open tag
+            .replace(/<\/${tag.toLowerCase()}>$/,""); // Remove redundant close tag        
 
         return {
             type: 'list',
