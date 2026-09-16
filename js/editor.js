@@ -320,7 +320,8 @@ function renderEditor(content, filename, paneId = 'pane1') {
 
     // Position to show suggested note files
     function getCaretRect() { // Won't return (0,0)
-        const selection = window.getSelection();
+        // Another method for caret pos:
+        /*const selection = window.getSelection();
         if (!selection.rangeCount) return null;
 
         const range = selection.getRangeAt(0).cloneRange();
@@ -331,20 +332,29 @@ function renderEditor(content, filename, paneId = 'pane1') {
         markerRange.selectNode(marker);
 
         const rect = markerRange.getBoundingClientRect();
-        marker.remove();
+        marker.remove();*/
+
+        // Default left, more precise top
+        var temp = document.querySelector("#pane1 .ce-line");
+        var left = temp.getBoundingClientRect().left;
+        var y = temp.getBoundingClientRect().top;
+        var h = temp.getBoundingClientRect().height;
+        var padLines = 1; // Weird currentLine in some cases, show filter 1 line below.
+        var top = y + ((state.currentLine+padLines) * h);
 
         return {
-            left: rect.left,
-            top: rect.bottom
+            left: left, // rect.left,
+            top: top // rect.bottom
         };
     }
     // To insert note file name
     function insertHtmlAtCaret(html) {
+        var ceKey = "pane1"; // Currently works with main pane only
         // Logic from source-editor.js, func: _paste
-        window.sourceEditors?.[_ceKey]?._insert(html);
-        window.sourceEditors?.[_ceKey]?._render(); 
-        window.sourceEditors?.[_ceKey]?._syncMirror(); 
-        window.sourceEditors?.[_ceKey]?._scrollToCursor();
+        window.sourceEditors?.[ceKey]?._insert(html);
+        window.sourceEditors?.[ceKey]?._render(); 
+        window.sourceEditors?.[ceKey]?._syncMirror(); 
+        window.sourceEditors?.[ceKey]?._scrollToCursor();
     }
     // Show wikilink suggestions
     function showSuggestions(suggestionInput,fileNames){
@@ -369,9 +379,10 @@ function renderEditor(content, filename, paneId = 'pane1') {
                 event.preventDefault();
                 // await navigator.clipboard.writeText(name);
                 hideSuggestions();          
+                var ceKey = "pane1"; // Currently works with main pane only
 
                 for (let i=0; i<suggestionInput.length; i++)
-                    window.sourceEditors?.[_ceKey]?._deleteBackward();
+                    window.sourceEditors?.[ceKey]?._deleteBackward();
 
                 insertHtmlAtCaret(name);
             });
