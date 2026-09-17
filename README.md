@@ -3,6 +3,7 @@
 Additional features and fixes got waited for too long for original author
 to merge. This fork is with some new features added and fixes made.
 
+# Original README:
 
 # [hotnote.io](https://hotnote.io)
 
