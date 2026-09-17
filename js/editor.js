@@ -436,17 +436,19 @@ function renderEditor(content, filename, paneId = 'pane1') {
             return;
         }
         // Find matching files
-        suggestionInput += key;
-        var suggestions = [];
+        if (key.length==1){ // Exclude non-text keys
+            suggestionInput += key;
+            var suggestions = [];
 
-        for (let f of fileList)
-            if (f.toLowerCase().indexOf(suggestionInput) >= 0){
-                suggestions.push(f);
-                if (suggestions.length>=10) break;
-            }
+            for (let f of fileList)
+                if (f.toLowerCase().indexOf(suggestionInput) >= 0){
+                    suggestions.push(f);
+                    if (suggestions.length>=10) break;
+                }
 
-        if (suggestions.length>0)
-            showSuggestions(suggestionInput,suggestions);
+            if (suggestions.length>0)
+                showSuggestions(suggestionInput,suggestions);
+        }
     });
 }
 
