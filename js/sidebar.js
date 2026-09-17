@@ -670,6 +670,20 @@ function clearSearch() {
     renderSidebar();
 }
 
+function isTextFile(fileName){
+    const EXTENSIONS = ["txt","md","markdown","rst","adoc","csv","tsv","json","jsonl",
+        "xml","yaml","yml","toml","ini","cfg","conf","env","log","sql","html","htm",
+        "css","scss","less","js","mjs","cjs","ts","tsx","jsx","dart","py","java","kt",
+        "kts","c","h","cpp","hpp","cs","go","rs","swift","php","rb","lua","sh","bash",
+        "zsh","ps1","bat","cmd","svg","graphql","gql","diff","patch","srt","vtt"
+    ];
+    var tail = fileName.match(/\.[0-9A-Za-z]+$/);
+    if (tail==null) return false;
+    
+    var ext = tail[0].slice(1).toLowerCase();
+    return EXTENSIONS.includes(ext);
+}
+
 async function performSearch(query, includeContent, excludePatterns) {
     // Cancel any previous in-flight search
     if (_searchAbortController) { _searchAbortController.abort(); }
@@ -714,7 +728,23 @@ async function performSearch(query, includeContent, excludePatterns) {
                 if (signal.aborted) return;
                 const f = candidateFiles[fi++];
                 try {
-                    const text = await (await f.handle.getFile()).text();
+                    // Only search in text-based files
+                    if (!isTextFile(f.name)){
+                        log("Ignoring non-text file in search:",f.name);
+                        throw new Error();
+                    }
+                    // Save file to cache for fast search
+                    query = query.trim().replace(/[\s]{2,}/g,"\x20");
+                    var text;
+                    if (window.textCache==null) window.textCache={};
+
+                    if (!Object.hasOwn(window.textCache,f.relPath)){
+                        text = await (await f.handle.getFile()).text();
+                        window.textCache[f.relPath] = text;
+                    }else 
+                        text = window.textCache[f.relPath];
+
+                    // Match content
                     if (signal.aborted) return;
                     if (text.toLowerCase().includes(query.toLowerCase())) {
                         contentHits.add(f.relPath);
