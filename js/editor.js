@@ -438,6 +438,7 @@ function renderEditor(content, filename, paneId = 'pane1') {
         // Find matching files
         if (key.length==1){ // Exclude non-text keys
             suggestionInput += key;
+            suggestionInput = suggestionInput.toLowerCase();
             var suggestions = [];
 
             for (let f of fileList)
@@ -446,8 +447,10 @@ function renderEditor(content, filename, paneId = 'pane1') {
                     if (suggestions.length>=10) break;
                 }
 
-            if (suggestions.length>0)
+            if (suggestions.length>0){
+                // log("Suggestion input:",suggestionInput);
                 showSuggestions(suggestionInput,suggestions);
+            }
         }
     });
 }
