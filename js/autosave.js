@@ -65,6 +65,13 @@ async function saveFile(silent = false, paneId = null) {
     const ps = getPaneState(pid);
     if (!ps.currentFileHandle) return;
     const textarea = getPaneEl('source-editor', pid);
+
+    // Save to cache for searching
+    var content = textarea.value || "";
+    if (window.textCache==null) window.textCache={};
+    window.textCache[ps.currentRelativePath] = content;
+
+    // Save to file
     try {
         await writeFile(ps.currentFileHandle, textarea ? textarea.value : '');
         const savedFile = await ps.currentFileHandle.getFile();

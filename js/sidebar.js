@@ -728,11 +728,23 @@ async function performSearch(query, includeContent, excludePatterns) {
                 if (signal.aborted) return;
                 const f = candidateFiles[fi++];
                 try {
+                    // Only search in text-based files
                     if (!isTextFile(f.name)){
                         log("Ignoring non-text file in search:",f.name);
                         throw new Error();
                     }
-                    const text = await (await f.handle.getFile()).text();
+                    // Save file to cache for fast search
+                    query = query.trim().replace(/[\s]{2,}/g,"\x20");
+                    var text;
+                    if (window.textCache==null) window.textCache={};
+
+                    if (!Object.hasOwn(window.textCache,f.relPath)){
+                        text = await (await f.handle.getFile()).text();
+                        window.textCache[f.relPath] = text;
+                    }else 
+                        text = window.textCache[f.relPath];
+
+                    // Match content
                     if (signal.aborted) return;
                     if (text.toLowerCase().includes(query.toLowerCase())) {
                         contentHits.add(f.relPath);
