@@ -46,13 +46,17 @@ function dismissUpdateBanner() {
 
 async function checkForUpdate() {
     try {
-        const res = await fetch('/version.json?_=' + Date.now(), { cache: 'no-store' });
+        // Letter user reload tab instead, no check,
+        // commented out
+        /*
+        const res = await fetch('version.json?_=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) return;
         const { sha } = await res.json();
         if (!sha) return;
         const known = localStorage.getItem(UPDATE_CHECK_KEY);
         if (!known) { localStorage.setItem(UPDATE_CHECK_KEY, sha); return; }
         if (sha !== known) showUpdateBanner();
+        */
     } catch (_) { /* ignore */ }
 }
 
