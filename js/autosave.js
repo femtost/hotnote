@@ -107,5 +107,9 @@ function setDirty(paneId = 'pane1') {
 function updateTitle() {
     const prefix = state.isDirty ? '• ' : '';
     const filename = state.currentFilename ? ` — ${state.currentFilename}` : '';
-    document.title = `${prefix}hotnote${filename}`;
+
+    // App name only, avoid document title accidentally tracked,
+    // See note in index.html
+    // document.title = `${prefix}hotnote${filename}`;
+    document.title = `Hotnote`;
 }
