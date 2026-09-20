@@ -38,8 +38,15 @@
 
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Not this, it sends note titles to Umami -->
-    <!-- <script defer src="https://cloud.umami.is/script.js" data-website-id="bc47a3ae-96b5-4c31-9863-c6b27d72f0f4" data-tag="app"></script> -->
+    <!-- Not this Umami tracker, it sends note titles (in document.title) to Umami 
+    eg. {
+        "website": "bc47a3ae-96b5-4c31-9863-c6b27d72f0f4",
+        "screen": "1920x1080", "language": "en-US", "title": "hotnote — TITLE HERE BY JS",
+        "hostname": "localhost", "url": "http://localhost:8000/?workdir=DIR-HERE&file=FILE-HERE.md",
+        "referrer": "/?workdir=DIR-HERE", "tag": "app"
+    } -->
+    <!-- <script defer src="https://cloud.umami.is/script.js" 
+        data-website-id="bc47a3ae-96b5-4c31-9863-c6b27d72f0f4" data-tag="app"></script> -->
 
     <script>
         // Apply saved theme immediately to prevent flash
