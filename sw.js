@@ -1,3 +1,6 @@
+// THIS FILE IS LOADED AS /sw.js IN INDEX.HTML BUT
+// IT IS NOT NEEDED, MAINLY SERVES FOR OFFLINE APP LOAD PURPOSE EG. PWA.
+/*
 const CACHE = 'hotnote-4abf14e';
 const SHELL = ['/', '/index.html', '/manifest.json', '/icon-512.png',
                '/css/style.css', '/js/hotnote.js', '/js/lib-markdown.js', '/js/lib-format.js'];
@@ -25,3 +28,4 @@ self.addEventListener('fetch', e => {
     }
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
 });
+*/

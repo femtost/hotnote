@@ -56,9 +56,10 @@
             document.documentElement.setAttribute('data-theme', t);
         })();
         // Register service worker for PWA
-        if ('serviceWorker' in navigator) {
+        // No need, use live app always
+        /*if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js');
-        }
+        }*/
     </script>
 </head>
 <body>
