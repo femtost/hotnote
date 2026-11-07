@@ -3,6 +3,8 @@
 Additional features and fixes got waited for too long for original author
 to merge. This fork is with some new features added and fixes made.
 
+*Note:* **This repo name must be in lowercase to deploy in folder x.github.io/hotnote**
+
 # Original README:
 
 # [hotnote.io](https://hotnote.io)
