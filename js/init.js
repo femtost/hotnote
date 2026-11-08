@@ -56,10 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Activate default ui
         d$("#search-btn").click();
         d$("#split-pane-btn").click();
-        d$("#search-content-toggle").click();        
-        d$("#sidebar").style.width = "25vw !important";
-        d$("#pane2").style.minWidth = "25vw !important";
-        d$("#pane2").style.maxWidth = "25vw !important";
+        d$("#search-content-toggle").click();
+        var ele = document.createElement("style");
+        ele.textContent = `
+            #sidebar { width:25vw !important; }
+            #pane2 { min-width:25vw !important; max-width:25vw !important; }
+        `;
+        d$("head").appendChild(ele);
         // DanDDinh/end
     });
 
