@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('open-folder')?.addEventListener('click', async () => {
         await openFolder();
         await refreshGitStatus({ force: true });
+
+        // DanDDinh/begin
+        // Activate default ui
+        d$("#search-btn").click();
+        d$("#split-pane-btn").click();
+        d$("#search-content-toggle").click();        
+        d$("#sidebar").style.width = "25vw !important";
+        d$("#pane2").style.minWidth = "25vw !important";
+        d$("#pane2").style.maxWidth = "25vw !important";
+        // DanDDinh/end
     });
 
     // Git changes filter checkbox
