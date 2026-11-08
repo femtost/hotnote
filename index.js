@@ -111,23 +111,6 @@ function additionalMain() {
     // setInterval(fixListIndents,1000);
     setInterval(addEvents,1000);
     setInterval(fixUrls,1000);
-
-    // Default UI
-    var ival = setInterval(()=>{
-        var testEle = d$("#split-pane-btn");
-        if (testEle==null) return;
-
-        // Activate default ui
-        d$("#search-btn").click();
-        d$("#split-pane-btn").click();
-        d$("#search-content-toggle").click();
-
-        setTimeout(()=>{
-            d$("#sidebar").style.width = "25vw";
-            d$("#pane2").style.minWidth = "25vw";
-            d$("#pane2").style.maxWidth = "25vw";
-        },10);
-    },100);
 }
 window.addEventListener("load",additionalMain,{once:true});
 // EOF
